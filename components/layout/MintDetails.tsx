@@ -1,14 +1,13 @@
 import {Button, Card, CardBody, CardFooter, Heading, HStack, Progress, Spacer, Text, VStack} from "@chakra-ui/react";
 import SocialNetworks from "./SocialNetworks";
 import {useMetaplex} from "../providers/useMetaplex";
-import {useWallet} from "@solana/wallet-adapter-react";
+import {useConnection, useWallet} from "@solana/wallet-adapter-react";
 import {useEffect, useState} from "react";
 import {CANDY_GUARD, CANDY_MACHINE} from "../../config/candyMachine";
 import type {CandyMachine, DefaultCandyGuardSettings} from "@metaplex-foundation/js";
 import allowList from "../../config/allowList";
 import {getMerkleProof} from "@metaplex-foundation/js";
 import Raffle from "../raffles/Raffle";
-import {Transaction} from "@solana/web3.js";
 
 const MintDetails = () => {
   const { metaplex } = useMetaplex();
@@ -146,8 +145,6 @@ const MintDetails = () => {
 
   const onMint = async () => {
     if (metaplex == null || candyMachine == null) return;
-    //const tx = new Transaction();
-    //tx.add((await metaplex.candyMachines().builders().mint()));
 
     await metaplex.candyMachines().mint({
       candyMachine: {...candyMachine},
