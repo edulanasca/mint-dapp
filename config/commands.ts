@@ -19,7 +19,7 @@ dotenv.config({ path: path.resolve(process.cwd(), '.env.local') });
 dayjs.extend(duration);
 
 type Holder = { owner_wallet: string, mint_account: string, metadata_account: string, associated_token_address: string };
-const metaplex = Metaplex.make(new Connection(clusterApiUrl('devnet')))
+const metaplex = Metaplex.make(new Connection(clusterApiUrl(process.env.ENV === "dev" ? "devnet" : "mainnet-beta")))
   .use(keypairIdentity(Keypair.fromSecretKey(Uint8Array.from(JSON.parse(process.env.AUTHORITY as string)))));
 const getHolders = async (path: string) => (await import(path, { assert: { type: "json" } })).default as Holder[];
 const snapshotHolders = async (creator: string) => {
