@@ -23,5 +23,8 @@ dist-ssr
 *.sln
 *.sw?
 
-nfts/*
-nfts/assets/*
+nfts/*.json
+nfts/assets/*.json
+nfts/assets/*.png
+raffle/hidden/*.png
+raffle/*.json

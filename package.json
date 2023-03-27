@@ -4,8 +4,9 @@
   "version": "0.0.0",
   "type": "module",
   "scripts": {
-    "merkle": "ts-node --esm ./config/config.ts merkle",
-    "freeze": "ts-node --esm ./config/config.ts freeze",
+    "merkle": "ts-node --esm config/commands.ts merkle",
+    "freeze": "ts-node --esm config/commands.ts freeze",
+    "raffle": "ts-node --esm config/commands.ts raffle",
     "dev": "vite",
     "build": "tsc && vite build",
     "preview": "vite preview"
@@ -20,7 +21,9 @@
     "@solana/wallet-adapter-react-ui": "^0.9.30",
     "@solana/wallet-adapter-wallets": "^0.19.15",
     "@solana/web3.js": "^1.74.0",
+    "bs58": "^5.0.0",
     "buffer": "^6.0.3",
+    "dayjs": "^1.11.7",
     "framer-motion": "^10.6.1",
     "react": "^18.2.0",
     "react-dom": "^18.2.0",

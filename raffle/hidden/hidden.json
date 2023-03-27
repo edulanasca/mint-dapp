@@ -1,0 +1,17 @@
+{
+  "name": "The Project Raffle",
+  "symbol": "KING",
+  "description": "The Project Raffle",
+  "image": "https://nftstorage.link/ipfs/bafkreidegzn42ljlz2q7aybpdu7nzcdco7hzz5r7qoifc3fkewsrq3nzn4",
+  "attributes": [],
+  "properties": {
+    "files": [
+      {
+        "uri": "https://nftstorage.link/ipfs/bafkreidegzn42ljlz2q7aybpdu7nzcdco7hzz5r7qoifc3fkewsrq3nzn4",
+        "type": "image/png"
+      }
+    ],
+    "category": "image"
+  },
+  "seller_fee_basis_points": 1000
+}

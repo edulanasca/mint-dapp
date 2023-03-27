@@ -4,15 +4,15 @@ import type {IconType} from "react-icons";
 const socialNetworks: Record<string, { logo: IconType, url: string }> = {
   twitter: {
     logo: BsTwitter,
-    url: "/1"
+    url: ""
   },
   discord: {
     logo: BsDiscord,
-    url: "/2"
+    url: ""
   },
   webpage: {
     logo: TbWorldWww,
-    url: "/3"
+    url: ""
   }
 }
 

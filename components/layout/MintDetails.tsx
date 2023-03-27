@@ -1,17 +1,32 @@
-import {Button, Card, CardBody, CardFooter, Heading, HStack, Progress, Spacer, Text, VStack} from "@chakra-ui/react";
+import {
+  Box,
+  Button,
+  Card,
+  CardBody,
+  CardFooter,
+  Heading,
+  HStack,
+  Progress,
+  Spacer,
+  Text, useToast,
+  VStack
+} from "@chakra-ui/react";
 import SocialNetworks from "./SocialNetworks";
 import {useMetaplex} from "../providers/useMetaplex";
-import {useConnection, useWallet} from "@solana/wallet-adapter-react";
+import {useWallet} from "@solana/wallet-adapter-react";
 import {useEffect, useState} from "react";
 import {CANDY_GUARD, CANDY_MACHINE} from "../../config/candyMachine";
 import type {CandyMachine, DefaultCandyGuardSettings} from "@metaplex-foundation/js";
 import allowList from "../../config/allowList";
 import {getMerkleProof} from "@metaplex-foundation/js";
 import Raffle from "../raffles/Raffle";
+import projectInfo from "../../config/projectInfo";
+import {handleError} from "../utils";
 
 const MintDetails = () => {
   const { metaplex } = useMetaplex();
   const wallet = useWallet();
+  const toast = useToast();
   const [disableMint, setDisableMint] = useState(true);
   const [candyMachine, setCandyMachine] = useState<CandyMachine | undefined>(undefined);
   const [percentage, setPercentage] = useState(0);
@@ -37,7 +52,7 @@ const MintDetails = () => {
     if (wallet.publicKey !== null && candyMachine == undefined) {
       checkEligibility()
         .then((candy) => addListener(candy).then())
-        .catch(err => console.error(err));
+        .catch(err => handleError("Error with Candy Machine", err, toast));
     }
   }, [metaplex, wallet.publicKey]);
 
@@ -57,7 +72,7 @@ const MintDetails = () => {
 
     // enough items available?
     if (candy && candy.itemsMinted.sub(candy.itemsAvailable).gtn(0)) {
-      console.error("not enough items available");
+      handleError("Not enough items available", "", toast)
       setDisableMint(true);
       return;
     }
@@ -67,7 +82,7 @@ const MintDetails = () => {
     const solanaTime = await metaplex.connection.getBlockTime(slot);
     if (guard?.startDate != null && solanaTime != null) {
       if (solanaTime < guard.startDate.date.toNumber()) {
-        console.error("startDate: CM not live yet");
+        handleError("Not live yet", "", toast);
         setDisableMint(true);
         return;
       }
@@ -75,7 +90,7 @@ const MintDetails = () => {
 
     if (guard?.endDate != null && solanaTime != null) {
       if (solanaTime > guard.endDate.date.toNumber()) {
-        console.error("endDate: CM not live anymore");
+        handleError("Not live anymore", "", toast);
         setDisableMint(true);
         return;
       }
@@ -93,7 +108,7 @@ const MintDetails = () => {
           }
         });
       } catch (err) {
-        console.error(err);
+        handleError("Error your validating address", err, toast);
         setDisableMint(true);
         return;
       }
@@ -147,38 +162,42 @@ const MintDetails = () => {
     if (metaplex == null || candyMachine == null) return;
 
     await metaplex.candyMachines().mint({
-      candyMachine: {...candyMachine},
+      candyMachine: { ...candyMachine },
       collectionUpdateAuthority: candyMachine.authorityAddress,
       group: isWl() ? "wl" : "public"
     });
   }
 
   return (
-    <VStack>
-      <HStack>
-        <Heading size="md">{candyMachine?.itemsAvailable.toString() ?? 0}</Heading>
-        <Text>Total Items</Text>
-        <Spacer/>
-        <SocialNetworks/>
-      </HStack>
-      <Card>
-        <CardBody>
-          <HStack>
-            <Text>Total Minted</Text>
-            <Spacer/>
-            <Text>{`${percentage.toFixed(2)} %`}</Text>
-            <Text>{`${candyMachine?.itemsMinted ?? 0}/${candyMachine?.itemsAvailable ?? 0}`}</Text>
-          </HStack>
-          <Progress value={percentage}/>
-        </CardBody>
-        <CardFooter>
-          {
-            percentage >= 90 ? <Raffle/> :
-              <Button isDisabled={disableMint} onClick={onMint}>Mint</Button>
-          }
-        </CardFooter>
-      </Card>
-    </VStack>
+    !wallet.connected ?
+      <Box>
+        <Heading>Connect your wallet</Heading>
+      </Box> :
+      <VStack>
+        <HStack>
+          <Heading size="md">{candyMachine?.itemsAvailable.toString() ?? 0}</Heading>
+          <Text>Total Items</Text>
+          <Spacer/>
+          <SocialNetworks/>
+        </HStack>
+        <Card width="90%">
+          <CardBody>
+            <HStack>
+              <Text>Total Minted</Text>
+              <Spacer/>
+              <Text>{`${percentage.toFixed(2)} %`}</Text>
+              <Text>{`${candyMachine?.itemsMinted ?? 0}/${candyMachine?.itemsAvailable ?? 0}`}</Text>
+            </HStack>
+            <Progress value={percentage}/>
+          </CardBody>
+          <CardFooter display="flex" justifyContent="center">
+            {
+              percentage >= projectInfo.raffle.afterNMints ? <Raffle candyMachine={candyMachine}/> :
+                <Button isDisabled={disableMint} onClick={onMint}>Mint</Button>
+            }
+          </CardFooter>
+        </Card>
+      </VStack>
   );
 }
 

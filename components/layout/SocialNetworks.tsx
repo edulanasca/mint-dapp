@@ -13,7 +13,7 @@ const SocialNetworks = () => {
           .filter(key => socials[key].url !== "")
           .map(key => {
             const {logo, url} = socials[key];
-            return <IconButton aria-label={key} icon={<Icon as={logo}/>} onClick={() => openInNewTab(url)}/>;
+            return <IconButton key={key} aria-label={key} icon={<Icon as={logo}/>} onClick={() => openInNewTab(url)}/>;
           })
       }
     </HStack>
